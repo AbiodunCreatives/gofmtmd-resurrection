@@ -1,10 +1,15 @@
 $ ./gofmtmd-before broken.md
 panic: runtime error: index out of range [9] with length 9
 
+goroutine 1 [running]:
+github.com/po3rin/gofmtmd.FmtGoCodeInMarkdown.genFmtWalker.func2(...)
+	gofmtmd.go:40 +0x30f
+...
+
 (exit code 2)
 
 $ ./gofmtmd-after broken.md
-2026/11/15 02:38:44 [gofmtmd] line='}', msg='8:1: expected operand, found '}''
+2026/11/14 [gofmtmd] line='}', msg='8:1: expected operand, found '}''
 (exit code 1)
 
 $ ./gofmtmd-before shared.md
@@ -21,6 +26,7 @@ Only this Go block should be formatted:
 ```go
 x := 1 + 2
 ```
+(exit code 0)
 
 $ ./gofmtmd-after shared.md
 # Demo: same snippet in prose and in a Go block
@@ -36,3 +42,4 @@ Only this Go block should be formatted:
 ```go
 x := 1 + 2
 ```
+(exit code 0)

@@ -42,6 +42,44 @@ Flags:
   -w, --write string   write result to file instead of stdout
 ```
 
+## Resurrection
+
+This repository revives gofmtmd, originally written by
+[po3rin](https://github.com/po3rin).  The last real upstream commit was in
+August 2020.  Two bugs were fixed as part of the Kiroween 2026 Resurrection
+entry.
+
+**Bug 1 — wrong line reported for syntax errors; panic on errors near end of block.**
+`genFmtWalker` used `code[i+1]` to look up the offending line from a Go
+parser error.  Go's parser numbers lines from 1, so the correct index is
+`code[i-1]`.  Using `i+1` reported a line two below the real error, and
+when the error fell on either of the last two lines of a block it panicked
+with `index out of range`.  The fix changes the index to `i-1` and adds a
+bounds check so a malformed line number falls back to the raw parser error
+instead of panicking.
+
+**Bug 2 — global `bytes.ReplaceAll` rewrites matching text outside Go blocks.**
+The walker called `bytes.ReplaceAll` over the entire Markdown buffer, so
+identical text in prose, inline code spans, or other fenced blocks was
+silently reformatted alongside the real Go block.  The fix replaces the
+global call with a cursor-based approach: a running offset advances past
+each opening Go fence (matched by a regexp that handles both backtick and
+tilde fences with up to three leading spaces per the CommonMark spec), then
+only the first occurrence of the block's literal after that fence is
+substituted.
+
+**Running the demo.**
+From the `demo/` folder, run the before and after binaries on both
+`broken.md` (shows the panic vs. the clean error) and `shared.md` (shows
+the global rewrite vs. selective replacement).  See `demo/DEMO.md` for the
+full walkthrough and `demo/output.txt` for the exact expected output.
+
+**Tests.**  From the repo root:
+
+```bash
+go test ./...
+```
+
 ## Vim Plugin
 
 Vim plugin version is here! this plugin lets you to run automatically when saved.
