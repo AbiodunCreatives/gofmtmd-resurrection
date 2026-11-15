@@ -55,3 +55,19 @@ func TestFmtGoCodeInMarkdown(t *testing.T) {
 		})
 	}
 }
+
+// Regression: a syntax error on one of the last lines of a block used to panic
+// with "index out of range" and report the wrong line.
+func TestSyntaxErrorNearEndOfBlock(t *testing.T) {
+	md, err := ioutil.ReadFile("./testdata/errorlastline.md")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = gofmtmd.FmtGoCodeInMarkdown(md)
+	if err == nil {
+		t.Fatal("expected a syntax error")
+	}
+	if !bytes.Contains([]byte(err.Error()), []byte("line='}'")) {
+		t.Fatalf("error should point at the broken line, got: %v", err)
+	}
+}

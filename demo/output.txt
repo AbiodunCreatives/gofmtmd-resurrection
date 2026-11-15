@@ -1,0 +1,38 @@
+$ ./gofmtmd-before broken.md
+panic: runtime error: index out of range [9] with length 9
+
+(exit code 2)
+
+$ ./gofmtmd-after broken.md
+2026/11/15 02:38:44 [gofmtmd] line='}', msg='8:1: expected operand, found '}''
+(exit code 1)
+
+$ ./gofmtmd-before shared.md
+# Demo: same snippet in prose and in a Go block
+
+Inline code we want left exactly as written: `x := 1 + 2`
+
+```text
+x := 1 + 2
+```
+
+Only this Go block should be formatted:
+
+```go
+x := 1 + 2
+```
+
+$ ./gofmtmd-after shared.md
+# Demo: same snippet in prose and in a Go block
+
+Inline code we want left exactly as written: `x:=1+2`
+
+```text
+x:=1+2
+```
+
+Only this Go block should be formatted:
+
+```go
+x := 1 + 2
+```

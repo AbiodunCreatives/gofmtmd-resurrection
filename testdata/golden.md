@@ -40,7 +40,7 @@ b := "has lines"
 
 ## code block (not fenced code)
 
-`a := 1 + 1`
+`a:=1+1`
 
 `a::=1+1`
 
